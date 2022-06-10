@@ -15,6 +15,8 @@
             <p class="text">Вгадай число яке загадав комп'ютер! Для цього тобі потрібно лише обрати число з випадаючого списку.</p>
             <?php 
                 session_start();
+
+                $newGame = 0;
                 if (isset($_POST['new'])) {
                     header("refresh: 0;");
                     session_destroy();
@@ -36,18 +38,24 @@
                     $number = $_POST['number'];
                     if ($password == $number) {
                         echo ("<h1>ПЕРЕМОГА!</h1>");
+                        $newGame++;
                          if (count($disabledNumbers) == 2) {
                             echo ("<p>З тебе вийде такий собі екстрасенс!</p>");
                         } else {
                             echo ("<p>З тебе вийде чудовий екстрасенс!</p>");
                         }
+                        echo "<p style='display: none;'>";
                     } else if ($password != $number && count($disabledNumbers) < 3) {
                         echo ("<h1>Не вгадав!</h1>");
+                        echo "<p>";
                         array_push($disabledNumbers, $number);
                         if (count($disabledNumbers) == 2) {
                             echo ("<h1>Залишилась ще одна спроба!</h1>");
+                            echo "<p>";
                         } else if (count($disabledNumbers) == 3) {
                             echo ("<h1>З тебе не вийде екстрасенсу!</h1>");
+                            echo "<p style='display: none;'>";
+                            $newGame++;
                         }
                     }
                 }
@@ -57,7 +65,6 @@
                         $numbers[] .= $i;
                     }
                 ?>
-                <p>
                 <select name="number">   
                     <?php foreach ($numbers as $value): ?> 
                     <option value="<?= $value ?>" 
@@ -67,9 +74,11 @@
                                 echo 'disabled';
                             } else if (count($disabledNumbers) == 3 || $password == $number) {
                                 echo 'disabled';
+                                $newGame++;
                             }
                         } else if ((isset($_POST['number']) == $password) && count($disabledNumbers) == 0) {
                             echo 'disabled';
+                            $newGame++;
                         }
                     ?>> 
                     <?= $value?> 
@@ -82,7 +91,13 @@
             <input class="btn b" type="submit" name="sub" value="Спробувати"></p>
             <input type="hidden" name="password" value="<?php echo($password) ?>"><br>
             <hr>
+            <p <?php 
+            if ($newGame == 0) {
+                echo ("style='display: none;'");
+            }
+            ?> >
             <button class="btn t" type="submit" name="new">Нова гра!</button>
+            </p>
         </form>
     </main>
 </body>
